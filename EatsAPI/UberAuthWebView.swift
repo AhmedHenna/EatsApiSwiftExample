@@ -9,18 +9,16 @@ import SwiftUI
 import WebKit
 
 struct UberAuthWebView: View {
-     @Binding var showWebView : Bool
-     var redirectURL: String
-     @State var onAuthorizationCodeReceived: (String) -> ()
+    @Binding var showWebView : Bool
+    @State var onAuthorizationCodeReceived: (String) -> ()
     
     
     var body: some View {
         ZStack{
         }
         .fullScreenCover(isPresented: $showWebView) {
-            WebView(url: URL(string: "https://login.uber.com/oauth/v2/authorize?client_id=DldAybkh06QcH_tULEgo0UM_c71UQ4Wn&response_type=code&redirect_uri=\(redirectURL)")!,
+            WebView(url: URL(string: "https://login.uber.com/oauth/v2/authorize?client_id=\(Constants.CLIENT_ID)&response_type=code&redirect_uri=\(Constants.REDIRECT_URI)")!,
                     showWebView: $showWebView,
-                    redirectURL: redirectURL,
                     onAuthorizationCodeReceived: onAuthorizationCodeReceived)
         }
     }
@@ -29,7 +27,6 @@ struct UberAuthWebView: View {
 struct WebView: UIViewRepresentable {
     var url: URL
     @Binding var showWebView: Bool
-    var redirectURL: String
     var onAuthorizationCodeReceived: (String) -> ()
     
     func makeUIView(context: Context) -> WKWebView {
@@ -56,7 +53,7 @@ struct WebView: UIViewRepresentable {
         }
         
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-            let urlToMatch = parent.redirectURL
+            let urlToMatch = Constants.REDIRECT_URI
             if let urlStr = navigationAction.request.url?.absoluteString,
                urlStr.hasPrefix(urlToMatch) {
                 if let code = URLComponents(string: urlStr)?.queryItems?.first(where: { $0.name == "code" })?.value {

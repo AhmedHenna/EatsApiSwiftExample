@@ -11,13 +11,12 @@ import SwiftUI
 
 struct ContentView: View {
     @State var showWebView = false
-    //these next vars are not needed they are just used for printing
     @State var accessToken: String = ""
     @State var tokenType: String = ""
     @State var refreshToken: String = ""
     @State var scope: String = ""
     @State var error: String = ""
-
+    
     var body: some View {
         VStack {
             Button(action: {
@@ -25,7 +24,7 @@ struct ContentView: View {
             }) {
                 Text("Open WebView")
             }
-
+            
             if !accessToken.isEmpty {
                 Text("Access Token: \(accessToken)")
                 Text("Token Type: \(tokenType)")
@@ -34,12 +33,11 @@ struct ContentView: View {
             } else if !error.isEmpty {
                 Text("Error: \(error)")
             }
-
+            
             UberAuthWebView(
                 showWebView: $showWebView,
-                redirectURL: "http://localhost",
                 onAuthorizationCodeReceived: { code in
-                    requestUberApiToken(authorizationCode: code, redirectURL: "http://localhost") { result in
+                    requestUberApiToken(authorizationCode: code) { result in
                         
                         switch result {
                         case .success(let uberApi):
