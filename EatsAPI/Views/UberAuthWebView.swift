@@ -17,7 +17,7 @@ struct UberAuthWebView: View {
         ZStack{
         }
         .fullScreenCover(isPresented: $showWebView) {
-            WebView(url: URL(string: "https://login.uber.com/oauth/v2/authorize?client_id=\(Constants.CLIENT_ID)&response_type=code&redirect_uri=\(Constants.REDIRECT_URI)")!,
+            WebView(url: URL(string: "https://login.uber.com/oauth/v2/authorize?client_id=\(Constants.CLIENT_ID)&response_type=code&redirect_uri=\(Constants.REDIRECT_URI)&scope=eats.pos_provisioning")!,
                     showWebView: $showWebView,
                     onAuthorizationCodeReceived: onAuthorizationCodeReceived)
         }
@@ -37,7 +37,7 @@ struct WebView: UIViewRepresentable {
     
     func updateUIView(_ webView: WKWebView, context: Context) {
         var request = URLRequest(url: url)
-        request.httpShouldHandleCookies = false
+        request.httpShouldHandleCookies = true
         webView.load(request)
     }
     
@@ -55,6 +55,7 @@ struct WebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             let urlToMatch = Constants.REDIRECT_URI
             if let urlStr = navigationAction.request.url?.absoluteString,
+               
                urlStr.hasPrefix(urlToMatch) {
                 if let code = URLComponents(string: urlStr)?.queryItems?.first(where: { $0.name == "code" })?.value {
                     parent.showWebView = false
