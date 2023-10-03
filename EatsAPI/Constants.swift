@@ -14,4 +14,7 @@ class Constants {
     static let AUTH_STORE_URL = "https://api.uber.com/v1/eats/stores/"
     static let ORER_URL = "https://api.uber.com/v1/eats/stores/"
     static let ORDER_STATUS = "https://api.uber.com/v1/eats/orders/"
+    static let ORDER_DETAILS = "https://api.uber.com/v2/eats/order/"
 }
+
+

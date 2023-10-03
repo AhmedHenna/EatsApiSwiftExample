@@ -124,7 +124,7 @@ func requestUberApiTokenWithScopes(completion: @escaping (Result<UberApiResponse
         "client_secret": Constants.CLIENT_SECRET,
         "client_id": Constants.CLIENT_ID,
         "grant_type": "client_credentials",
-        "scope": "eats.store eats.order"
+        "scope": "eats.store eats.order eats.store.orders.read"
     ]
     
     request.httpBody = parameters.percentEncoded()
@@ -157,31 +157,34 @@ func requestUberApiTokenWithScopes(completion: @escaping (Result<UberApiResponse
     task.resume()
 }
 
-
-
-func fetchUberEatsOrders(storeID: String, completion: @escaping ([UberEatsOrder]?) -> Void) {
-    guard let url = URL(string: "\(Constants.UBER_AUTH_URL)\(storeID)/created-orders") else {
+func fetchUberEatsOrders(storeID: String, accessToken: String, completion: @escaping ([UberEatsOrder]?) -> Void) {
+    guard let url = URL(string: "https://api.uber.com/v1/eats/stores/\(storeID)/created-orders") else {
         print("Invalid URL")
         completion(nil)
         return
     }
-    
+
     var request = URLRequest(url: url)
     request.httpMethod = "GET"
-    
+    request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
     URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
             print("Error fetching orders: \(error.localizedDescription)")
             completion(nil)
             return
         }
-        
+
         if let data = data {
+            // Print the JSON response data as a string
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Received JSON data:")
+                print(jsonString)
+            }
+            
             do {
                 let decoder = JSONDecoder()
                 let decodedOrders = try decoder.decode([UberEatsOrder].self, from: data)
-                print("Received JSON data:")
-                print(decodedOrders) // Print the decoded JSON data
                 completion(decodedOrders)
             } catch {
                 print("Error decoding orders: \(error.localizedDescription)")
@@ -191,6 +194,67 @@ func fetchUberEatsOrders(storeID: String, completion: @escaping ([UberEatsOrder]
     }.resume()
 }
 
+func fetchStoreDetails(storeID: String, accessToken: String, completion: @escaping (Stores?) -> Void) {
+    guard let url = URL(string: "\(Constants.STORES_ID)/\(storeID)") else {
+        print("Invalid URL")
+        completion(nil)
+        return
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("Error fetching store: \(error.localizedDescription)")
+            completion(nil)
+            return
+        }
+
+        if let data = data {
+            do {
+                let decoder = JSONDecoder()
+                let decodedStore = try decoder.decode(Stores.self, from: data)
+                completion(decodedStore)
+            } catch {
+                print("Error decoding store: \(error.localizedDescription)")
+                completion(nil)
+            }
+        }
+    }.resume()
+}
+
+func fetchOrderDetails(orderID: String, accessToken: String, completion: @escaping (UberOrderDetails?) -> Void) {
+    guard let url = URL(string: "\(Constants.ORDER_DETAILS)\(orderID)") else {
+        print("Invalid URL")
+        completion(nil)
+        return
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("Error fetching order: \(error.localizedDescription)")
+            completion(nil)
+            return
+        }
+
+        if let data = data {
+            do {
+                let decoder = JSONDecoder()
+                let decodedOrder = try decoder.decode(UberOrderDetails.self, from: data)
+                completion(decodedOrder)
+            } catch {
+                print("Error decoding order: \(error.localizedDescription)")
+                completion(nil)
+            }
+        }
+    }.resume()
+}
 
 func acceptUberEatsOrder(orderID: String, accessToken: String, completion: @escaping (Result<Void, Error>) -> Void) {
     guard let url = URL(string: "\(Constants.ORDER_STATUS)\(orderID)/accept_pos_order") else {

@@ -11,6 +11,7 @@ import SwiftUI
 struct OrderRowView: View {
     var order: Order
     var accessToken: String
+    var store: String
     @State private var isPopupVisible = false
 
     var body: some View {
@@ -23,7 +24,7 @@ struct OrderRowView: View {
             isPopupVisible.toggle()
         }
         .sheet(isPresented: $isPopupVisible) {
-            OrderPopupView(order: order, accessToken: accessToken ,isPresented: $isPopupVisible)
+            OrderPopupView(order: order, accessToken: accessToken, store: store ,isPresented: $isPopupVisible)
         }
     }
 }
@@ -31,6 +32,6 @@ struct OrderRowView: View {
 
 struct OrderRowView_Previews: PreviewProvider {
     static var previews: some View {
-        OrderRowView(order: Order(id: "1", current_state: "Delivered", placed_at: "2023-09-15 10:00:00"), accessToken: "2")
+        OrderRowView(order: Order(id: "1", current_state: "Delivered", placed_at: "2023-09-15 10:00:00"), accessToken: "2", store: "2")
     }
 }

@@ -17,28 +17,28 @@ func calculateDistanceFromStoreToUser(storeLat: Double, storeLon: Double, userLa
     return distanceInMiles
 }
 
-func calculateResult(price: Double, distance: Double) -> Bool {
-    if price >= 15 && price < 20 && distance <= 1.5{
+func calculateResult(price: Int, distance: Double) -> Bool {
+    if price >= 1500 && price < 20 && distance <= 1.5{
         return true
     }
     
-    if price >= 20 && price < 25 && distance <= 2.0{
+    if price >= 2000 && price < 25 && distance <= 2.0{
         return true
     }
     
-    if price >= 25 && price < 30 && distance <= 3.0{
+    if price >= 2500 && price < 30 && distance <= 3.0{
         return true
     }
         
-    if price >= 30 && price < 35 && distance <= 3.5{
+    if price >= 3000 && price < 35 && distance <= 3.5{
         return true
     }
     
-    if price >= 35 && price < 40 && distance <= 3.5{
+    if price >= 3500 && price < 40 && distance <= 3.5{
         return true
     }
     
-    if price >= 40 && distance <= 4.0{
+    if price >= 4000 && distance <= 4.0{
         return true
     }
     

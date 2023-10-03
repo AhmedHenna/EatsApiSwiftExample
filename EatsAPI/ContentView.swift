@@ -12,7 +12,6 @@ import SwiftUI
 struct ContentView: View {
     @State var showWebView = false
     @State private var orders: [UberEatsOrder] = []
-    
     @State private var storeID: [String] = []
     @State private var accessToken: String = ""
     
@@ -21,11 +20,9 @@ struct ContentView: View {
             buttons
             displayOrders
             webViewCode
-            
-            
-            
         }
     }
+    
     var buttons: some View{
         VStack{
             Button(action: {
@@ -35,7 +32,7 @@ struct ContentView: View {
             }
             
             Button(action: {
-                fetchUberEatsOrders(storeID: storeID.first ?? "") { orders in
+                fetchUberEatsOrders(storeID: storeID.first ?? "", accessToken: accessToken) { orders in
                     if let orders = orders {
                         self.orders = orders
                     }
@@ -50,8 +47,8 @@ struct ContentView: View {
         ScrollView {
             // Use OrderRowView for each order
             ForEach(orders, id: \.id) { uberEatsOrder in
-                ForEach(uberEatsOrder.order, id: \.id) { order in
-                    OrderRowView(order: order, accessToken: accessToken)
+                ForEach(uberEatsOrder.orders, id: \.id) { order in
+                    OrderRowView(order: order, accessToken: accessToken, store: storeID.first ?? "")
                 }
             }
         }
@@ -78,14 +75,11 @@ struct ContentView: View {
                             requestUberApiTokenWithScopes { result in
                                 switch result{
                                 case .success(let uberScopeApi):
-                                    print("Success")
-                                    //add what to do after getting scopes
-                                    
-                                    
+                                    print(uberScopeApi.access_token)
+                                    accessToken = uberScopeApi.access_token
                                 case .failure(let error):
                                     print(error.localizedDescription)
                                 }
-                            
                             }
                         }
                     }

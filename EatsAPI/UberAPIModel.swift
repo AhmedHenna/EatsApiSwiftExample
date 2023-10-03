@@ -37,15 +37,19 @@ struct StoreLocation: Codable{
 
 struct UberEatsOrder: Codable, Identifiable {
     var id: UUID = UUID()
-    var order: [Order]
-    var eater: Eater
-    var payment: Payment
+    var orders: [Order]
 }
 
 struct Order: Codable {
     var id: String
     var current_state: String
     var placed_at: String
+}
+
+struct UberOrderDetails: Codable {
+    var id: String
+    var eater: Eater
+    var paymnet: Payment
 }
 
 struct Eater: Codable{
