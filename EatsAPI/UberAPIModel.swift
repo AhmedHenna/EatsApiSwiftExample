@@ -35,15 +35,20 @@ struct StoreLocation: Codable{
     var longitude: Double
 }
 
-struct UberEatsOrder: Codable, Identifiable {
-    var id: UUID = UUID()
-    var orders: [Order]
+struct Order: Codable {
+    let id: String
+    let current_state: String
+    let placed_at: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case current_state = "current_state"
+        case placed_at = "placed_at"
+    }
 }
 
-struct Order: Codable {
-    var id: String
-    var current_state: String
-    var placed_at: String
+struct UberEatsOrder: Codable {
+    let orders: [Order]
 }
 
 struct UberOrderDetails: Codable {

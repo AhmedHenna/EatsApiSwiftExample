@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State var showWebView = false
-    @State private var orders: [UberEatsOrder] = []
+    @State private var orders: UberEatsOrder = UberEatsOrder(orders: [])
     @State private var storeID: [String] = []
     @State private var accessToken: String = ""
     
@@ -45,20 +45,16 @@ struct ContentView: View {
     
     var displayOrders: some View{
         ScrollView {
-            // Use OrderRowView for each order
-            ForEach(orders, id: \.id) { uberEatsOrder in
-                ForEach(uberEatsOrder.orders, id: \.id) { order in
+                ForEach(orders.orders, id: \.id) { order in
                     OrderRowView(order: order, accessToken: accessToken, store: storeID.first ?? "")
                 }
             }
-        }
     }
     
     var webViewCode: some View{
         UberAuthWebView(
             showWebView: $showWebView,
             onAuthorizationCodeReceived: { code in
-                print("CODE", code)
                 apiCalls(code: code)
             }
         )
@@ -71,12 +67,12 @@ struct ContentView: View {
                 fetchUberEatsStoreIDs(forUserWithAccessToken: uberApi.access_token) { storeID in
                     if let storeID = storeID{
                         self.storeID = storeID
-                        authorizeStore(storeID: storeID.first ?? "", accessToken: accessToken) { _ in
+                        authorizeStore(storeID: storeID.first ?? "", accessToken: uberApi.access_token) { _  in
                             requestUberApiTokenWithScopes { result in
                                 switch result{
                                 case .success(let uberScopeApi):
-                                    print(uberScopeApi.access_token)
                                     accessToken = uberScopeApi.access_token
+                                    print(accessToken)
                                 case .failure(let error):
                                     print(error.localizedDescription)
                                 }

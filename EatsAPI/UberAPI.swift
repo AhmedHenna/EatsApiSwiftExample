@@ -96,7 +96,7 @@ func authorizeStore(storeID: String, accessToken: String, completion: @escaping 
     }
     
     var request = URLRequest(url: url)
-    request.httpMethod = "GET"
+    request.httpMethod = "POST"
     
     request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
     
@@ -157,7 +157,7 @@ func requestUberApiTokenWithScopes(completion: @escaping (Result<UberApiResponse
     task.resume()
 }
 
-func fetchUberEatsOrders(storeID: String, accessToken: String, completion: @escaping ([UberEatsOrder]?) -> Void) {
+func fetchUberEatsOrders(storeID: String, accessToken: String, completion: @escaping (UberEatsOrder?) -> Void) {
     guard let url = URL(string: "https://api.uber.com/v1/eats/stores/\(storeID)/created-orders") else {
         print("Invalid URL")
         completion(nil)
@@ -176,16 +176,11 @@ func fetchUberEatsOrders(storeID: String, accessToken: String, completion: @esca
         }
 
         if let data = data {
-            // Print the JSON response data as a string
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("Received JSON data:")
-                print(jsonString)
-            }
-            
             do {
                 let decoder = JSONDecoder()
-                let decodedOrders = try decoder.decode([UberEatsOrder].self, from: data)
-                completion(decodedOrders)
+                decoder.dateDecodingStrategy = .iso8601 // Handle ISO8601 date format
+                let decodedResponse = try decoder.decode(UberEatsOrder.self, from: data)
+                completion(decodedResponse)
             } catch {
                 print("Error decoding orders: \(error.localizedDescription)")
                 completion(nil)
