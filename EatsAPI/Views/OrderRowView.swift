@@ -15,11 +15,15 @@ struct OrderRowView: View {
     @State private var isPopupVisible = false
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Text("Order ID: \(order.id)")
+                .multilineTextAlignment(.center)
             Text("Current State: \(order.current_state)")
             Text("Placed At: \(order.placed_at)")
+            Divider()
+        
         }
+        .padding(.horizontal, 10)
         .onTapGesture {
             isPopupVisible.toggle()
         }
