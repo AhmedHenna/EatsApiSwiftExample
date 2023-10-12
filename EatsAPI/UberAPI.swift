@@ -272,7 +272,7 @@ func acceptUberEatsOrder(orderID: String, accessToken: String, completion: @esca
 
         // Check for successful response status codes here if needed
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode == 200 {
+            if httpResponse.statusCode == 200 || httpResponse.statusCode == 204 {
                 completion(.success(()))
             } else {
                 print("Failed to accept order. Status code: \(httpResponse.statusCode)")
@@ -303,7 +303,7 @@ func denyUberEatsOrder(orderID: String, accessToken: String, completion: @escapi
 
         // Check for successful response status codes here if needed
         if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode == 200 {
+            if httpResponse.statusCode == 200 || httpResponse.statusCode == 204 {
                 completion(.success(()))
             } else {
                 print("Failed to deny order. Status code: \(httpResponse.statusCode)")

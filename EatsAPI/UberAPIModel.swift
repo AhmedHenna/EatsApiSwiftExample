@@ -53,33 +53,5 @@ struct UberEatsOrder: Codable {
 
 struct UberOrderDetails: Codable {
     var id: String
-    var eater: Eater
-    var paymnet: Payment
+    var type: String
 }
-
-struct Eater: Codable{
-    var delivery: Delivery
-}
-
-struct Payment: Codable{
-    var charges: Charges
-}
-
-struct Charges: Codable{
-    var total: Money
-}
-
-struct Money: Codable{
-    var amount: Int
-    var formatted_amount: String
-}
-
-struct Delivery: Codable{
-    var location: Location
-}
-
-struct Location: Codable{
-    var latitude: Double
-    var longitude: Double
-}
-

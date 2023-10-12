@@ -12,7 +12,7 @@ struct OrderPopupView: View {
     var accessToken: String
     var store: String
     @Binding var isPresented: Bool
-
+    
     var body: some View {
         VStack {
             text
@@ -32,37 +32,30 @@ struct OrderPopupView: View {
     var buttons: some View{
         HStack{
             Button("Accept") {
-                    fetchStoreDetails(storeID: store, accessToken: accessToken) { store in
-                        fetchOrderDetails(orderID: order.id, accessToken: accessToken) { user in
-                            let distance = calculateDistanceFromStoreToUser(storeLat: store?.location.latitude ?? 0.0,
-                                                                            storeLon: store?.location.longitude ?? 0.0,
-                                                                            userLat: user?.eater.delivery.location.latitude ?? 0.0,
-                                                                            userLon: user?.eater.delivery.location.longitude ?? 0.0)
-                            
-                            let result = calculateResult(price: user?.paymnet.charges.total.amount ?? 0, distance: distance)
-                            
-                            
-                            if result == true{
-                                //if the result is better with Aexir then deny the order on Uber and deliver it with Aexir
-                                denyUberEatsOrder(orderID: order.id, accessToken: accessToken) { _ in
-                                    print("Order Accetped wit Aexir")
-                                }
-                                //TODO: Call the method here that will deliver the order using Aexir
-                                
-                            }else{
-                                acceptUberEatsOrder(orderID: order.id, accessToken: accessToken) { accepted in
-                                    print("Order Accepted with Uber")
-                                }
-                            }
+                
+                acceptUberEatsOrder(orderID: order.id, accessToken: accessToken) { result in
+                    
+                    switch result{
+                    case .success:
+                        fetchOrderDetails(orderID: order.id, accessToken: accessToken) { order in
+                            print(order?.type ?? "NO VALUE")
                         }
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
                 }
                 isPresented = false
             }
             
             
             Button("Deny") {
-                denyUberEatsOrder(orderID: order.id, accessToken: accessToken) { _ in
-                    print("Order Denied")
+                denyUberEatsOrder(orderID: order.id, accessToken: accessToken) { result in
+                    switch result{
+                    case .success:
+                        print("DENIED")
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
                 }
                 isPresented = false
             }
